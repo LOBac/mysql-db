@@ -11,6 +11,8 @@ SELECT NameDisease, Symptoms
 FROM Disease
 WHERE Bacterium_idBacterium='123123123'
 
+
+
 -- ***************************************************
 --  2. query using JOIN and WHERE conditions
 -- ***************************************************
