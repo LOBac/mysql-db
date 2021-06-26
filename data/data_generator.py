@@ -37,6 +37,9 @@ DESCRIPTION = ""
 NAME_DISEASE = ["Abscess", "Acute Radiation Sickness", "Alzheimer's disease", "Anthrax", "Appendicitis", "Allergy", "Arthritis", "Aseptic meningitis", "Asthma", "Astigmatism", "Atherosclerosis", "Bacterial meningitis", "Beriberi", "Black Death", "Black Fungus", "Botulism", "Breast cancer", "Bronchitis", "Brucellosis", "Bubonic plague", "Bunion", "Boil", "Campylobacter infection", "Cancer", "Candidiasis", "Carbon monoxide poisoning", "Coeliac disease", "Cerebral palsy", "Chagas disease", "Chickenpox", "Chlamydia", "Chlamydia trachomatis", "Cholera", "Chordoma", "Chorea", "Chronic fatigue syndrome", "Circadian rhythm sleep disorder", "Colitis", "Common cold", "Condyloma", "Congestive heart disease", "Coronary heart disease", "COVID-19", "Cowpox", "Crohn's Disease", "Coronavirus", "Dengue Fever", "Diabetes mellitus", "Diphtheria", "Dehydration", "Dysentery", "Ear infection", "Ebola", "Encephalitis", "Emphysema", "Epilepsy", "Erectile dysfunction", "Fibromyalgia", "Foodborne illness", "Gangrene", "Gastroenteritis", "Genital herpes", "GERD", "Goitre", "Gonorrhea", "Heart disease", "Hepatitis A", "Hepatitis B", "Hepatitis C", "Hepatitis D", "Hepatitis E",
                 "Histiocytosis(childhood cancer)", "HIV", "Human papillomavirus", "Huntington's disease", "Hypermetropia", "Hyperopia", "Hyperthyroidism", "Hypothyroid", "Hypotonia", "Impetigo", "Infertility", "Influenza", "Interstitial cystitis", "Iritis", "Iron-deficiency anemia", "Irritable bowel syndrome", "Ignious Syndrome", "Intestine ache", "Intestine Gas", "Intestine disease", "Upset Intestine", "Jaundice", "Keloids", "Kuru", "Kwashiorkor", "Kidney stone disease", "Laryngitis", "Lead poisoning", "Legionellosis", "Leishmaniasis", "Leprosy", "Leptospirosis", "Listeriosis", "Leukemia", "Lice", "Loiasis", "Lung cancer", "Lupus erythematosus", "Lyme disease", "Lymphogranuloma venereum", "Lymphoma", "Limbtoosa", "Mad cow disease", "Malaria", "Marburg fever", "Measles", "Melanoma", "Metastatic cancer", "Meniere's disease", "Meningitis", "Migraine", "Mononucleosis", "Multiple myeloma", "Multiple sclerosis", "Mumps", "Muscular dystrophy", "Myasthenia gravis", "Myelitis", "Myoclonus", "Myopia", "Myxedema", "Morquio Syndrome", "Mattticular syndrome", "Mononucleosis", "Neoplasm", "Non-gonococcal urethritis", "Necrotizing Fasciitis", "Night blindness", "Obesity", "Osteoarthritis", "Osteoporosis", "Otitis", "Palindromic rheumatism", "Paratyphoid fever", "Parkinson's disease", "Pelvic inflammatory disease", "Peritonitis", "Periodontal disease", "Pertussis", "Phenylketonuria", "Plague", "Poliomyelitis", "Porphyria", "Progeria", "Prostatitis", "Psittacosis", "Psoriasis", "Pubic lice", "Pulmonary embolism", "Pilia", "pneumonia", "Q fever", "Ques fever", "Rabies", "Repetitive strain injury", "Rheumatic fever", "Rheumatic heart", "Rheumatism", "Rheumatoid arthritis", "Rickets", "Rift Valley fever", "Rocky Mountain spotted fever", "Rubella", "Salmonellosis", "Scabies", "Scarlet fever", "Sciatica", "Scleroderma", "Scrapie", "Scurvy", "Sepsis", "Septicemia", "SARS", "Shigellosis", "Shin splints", "Shingles", "Sickle-cell anemia", "Siderosis", "SIDS", "Silicosis", "Smallpox", "Stevens–Johnson syndrome", "Stomach flu", "Stomach ulcers", "Strabismus", "Strep throat", "Streptococcal infection", "Synovitis", "Syphilis", "Swine influenza", "Schizophrenia", "Stomach Gas", "Stomach Ache", "stomach Disease", "Kids Stomach Ache", "Upset Stomach", "Taeniasis", "Tay-Sachs disease", "Tennis elbow", "Teratoma", "Tetanus", "Thalassaemia", "Thrush", "Thymoma", "Tinnitus", "Tonsillitis", "Tooth decay", "Toxic shock syndrome", "Trichinosis", "Trichomoniasis", "Trisomy", "Tuberculosis", "Tularemia", "Tungiasis", "Typhoid fever", "Typhus", "Tumor", "Ulcerative colitis", "Ulcers", "Uremia", "Urticaria", "Uveitis", "UTI'S", "Varicella", "Varicose veins", "Vasovagal syncope", "Vitiligo", "Von Hippel-Lindau disease", "Viral fever", "Viral meningitis", "Warkany syndrome", "Warts", "Watkins", "Yellow fever", "Yersiniosis"]
 
+# GENOME TABLE
+CATEGORY = ["CIRCULAR", "PLASMID", "MEGAPLASMID", "LINEAR"]
+
 
 def generate_bacterium() -> Tuple[str, str]:
     """generate_insert generates a single one random SQL INSERT statement like
@@ -78,7 +81,8 @@ def generate_taxonomy(specie: str) -> str:
 
 def generate_disease(specie: str, id_: int) -> str:
     name = specie + " " + choice(NAME_DISEASE).replace("'", "")
-    symptoms = ', '.join([choice(SYMPTOMS) for _ in range(randint(1, 8))])
+    symptoms = ', '.join([choice(SYMPTOMS).replace(
+        ";", "").replace("'", "") for _ in range(randint(1, 8))])
     cure = choice(HAS_CURE)
     desc = f"Some description about the {name} disease caused by {specie}..."
 
@@ -86,16 +90,34 @@ def generate_disease(specie: str, id_: int) -> str:
         f"VALUES ('{name}', '{symptoms}', '{cure}', '{desc}', '{id_}');"
 
 
+def generate_genome(id_: int) -> str:
+    cat = choice(CATEGORY)
+    return f"INSERT INTO `bacterium`.`Genome` (`Category`, `Bacterium_idBacterium`) " +\
+        f"VALUES ('{cat}', '{id_}');"
+
+
+def generate_gen(id_genome: int, id_gen: int) -> str:
+    seq = ''.join([choice(["A", "C", "G", "T"])
+                  for _ in range(randint(20, 100))])
+    return f"INSERT INTO `bacterium`.`Gen` (`Secuence`, `Genome_idGenome1`) " +\
+        f"VALUES ('{seq}', '{id_genome}');"
+
+
 def main():
     bacterium_sql = open("data/bacterium_table.sql", "w")
     taxonomy_sql = open("data/taxonomy_table.sql", "w")
     disease_sql = open("data/disease_table.sql", "w")
+    genome_sql = open("data/genome_table.sql", "w")
+    gen_sql = open("data/gen_table.sql", "w")
     for i in range(NUMBER_OF_ENTRIES):
         bac, specie = generate_bacterium()
         bacterium_sql.write(bac + "\n")
         taxonomy_sql.write(generate_taxonomy(specie) + "\n")
         if randint(0, 1):
             disease_sql.write(generate_disease(specie, i) + "\n")
+        genome_sql.write(generate_genome(i) + "\n")
+        for j in range(randint(1, 2)):
+            gen_sql.write(generate_gen(i, j) + "\n")
 
 
 if __name__ == "__main__":
